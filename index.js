@@ -41,7 +41,7 @@ let generateCurrentRainMap = (date, time) => {
     
         let rainmaps = coords.map(coord => Jimp.read(`https://dufgzh2t.user.webaccel.jp/radar/${date}${time}00/14/${coord[1]}/${coord[0]}.png`))
         return Promise.all(rainmaps).then(rains => {
-            rains.map(rain => rain.opacity(0.4))
+            rains.map(rain => rain.opacity(0.6))
             for (var x = 0; x <= rainMapToX - rainMapFromX; x++) {
                 for (var y = 0; y <= rainMapToY - rainMapFromY; y++) {
                     base.composite(rains[x * (rainMapToY - rainMapFromY + 1) + y],x * 256, y * 256)
@@ -55,12 +55,11 @@ let generateCurrentRainMap = (date, time) => {
 var app = express()
 app.get('/:date/:time.png', (req, res) => {
     generateCurrentRainMap(req.params['date'], req.params['time']).then(rainmap => {
-        rainmap.getBuffer(Jimp.MIME_PNG, (err, buf) => {
-            res.set('Content-Type', Jimp.MIME_PNG)
+        rainmap.getBuffer(Jimp.MIME_JPEG, (err, buf) => {
+            res.set('Content-Type', Jimp.MIME_JPEG)
             res.send(buf)
         })
     })
 })
 
 app.listen(PORT)
-
